@@ -72,13 +72,33 @@ function Shop() {
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
-      <div className="mx-auto max-w-7xl px-4 py-10">
-        <div className="mb-6 flex items-end justify-between">
-          <div>
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:py-10">
+        <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div className="min-w-0">
             <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Catalog</p>
-            <h1 className="mt-1 font-display text-3xl font-extrabold">Shop{category ? ` — ${category}` : ""}{q ? ` — "${q}"` : ""}</h1>
+            <h1 className="mt-1 break-words font-display text-2xl font-extrabold sm:text-3xl">
+              Shop{category ? ` — ${category}` : ""}{q ? ` — "${q}"` : ""}
+            </h1>
           </div>
-          <div className="text-sm text-muted-foreground">{products?.length ?? 0} products</div>
+          <div className="shrink-0 text-sm text-muted-foreground">{products?.length ?? 0} products</div>
+        </div>
+
+        <div className="mb-6 flex gap-2 overflow-x-auto pb-1 md:hidden">
+          <a
+            href="/shop"
+            className={`shrink-0 rounded-full border px-4 py-1.5 text-sm ${!category ? "border-primary bg-primary/10 font-semibold text-primary" : "border-border hover:border-primary hover:text-primary"}`}
+          >
+            All
+          </a>
+          {(cats ?? []).map((c) => (
+            <a
+              key={c.id}
+              href={`/shop?category=${c.slug}`}
+              className={`shrink-0 rounded-full border px-4 py-1.5 text-sm ${category === c.slug ? "border-primary bg-primary/10 font-semibold text-primary" : "border-border hover:border-primary hover:text-primary"}`}
+            >
+              {c.name}
+            </a>
+          ))}
         </div>
 
         <div className="grid gap-8 md:grid-cols-[220px_1fr]">
@@ -93,7 +113,7 @@ function Shop() {
               ))}
             </ul>
           </aside>
-          <div>
+          <div className="min-w-0">
             {isLoading ? (
               <div className="py-20 text-center text-sm text-muted-foreground">Loading…</div>
             ) : products && products.length ? (

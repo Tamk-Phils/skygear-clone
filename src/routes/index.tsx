@@ -94,20 +94,20 @@ function Home() {
       <section className="relative overflow-hidden">
         <img src={heroImg} alt="Professional camera drone flying at sunset for aerial photography" width={1920} height={900} className="absolute inset-0 size-full object-cover" />
         <div className="absolute inset-0 bg-navy/40" />
-        <div className="relative mx-auto flex max-w-7xl flex-col items-center px-4 py-32 text-center text-white md:py-44">
+        <div className="relative mx-auto flex max-w-7xl flex-col items-center px-4 py-20 text-center text-white sm:py-32 md:py-44">
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary">Welcome to</p>
-          <h1 className="mt-3 font-display text-5xl font-extrabold tracking-tight md:text-7xl">
+          <h1 className="mt-3 font-display text-3xl font-extrabold tracking-tight sm:text-5xl md:text-7xl">
             SkyGear Drones<span className="text-primary">®</span>
           </h1>
-          <p className="mt-4 max-w-xl text-white/85">
+          <p className="mt-4 max-w-xl text-sm text-white/85 sm:text-base">
             Professional camera drones, FPV racing quadcopters, cinema UAVs, intelligent flight
             batteries, gimbals and accessories — gear built by pilots, for pilots.
           </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <Link to="/shop" className="rounded-full bg-primary px-8 py-3 text-sm font-bold uppercase tracking-wide text-primary-foreground transition hover:bg-primary/90">
+          <div className="mt-8 flex w-full max-w-md flex-col justify-center gap-3 sm:max-w-none sm:flex-row sm:flex-wrap sm:gap-4">
+            <Link to="/shop" className="rounded-full bg-primary px-8 py-3 text-center text-sm font-bold uppercase tracking-wide text-primary-foreground transition hover:bg-primary/90">
               Shop Drones
             </Link>
-            <Link to="/guides" className="rounded-full border border-white/40 px-8 py-3 text-sm font-bold uppercase tracking-wide text-white transition hover:border-primary hover:text-primary">
+            <Link to="/guides" className="rounded-full border border-white/40 px-8 py-3 text-center text-sm font-bold uppercase tracking-wide text-white transition hover:border-primary hover:text-primary">
               Buying Guides
             </Link>
           </div>

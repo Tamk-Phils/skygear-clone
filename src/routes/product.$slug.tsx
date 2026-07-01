@@ -89,17 +89,17 @@ function ProductPage() {
       <div className="mx-auto max-w-7xl px-4 py-10">
         {isLoading ? <div className="py-20 text-center text-sm text-muted-foreground">Loading…</div> : product && (
           <>
-            <nav aria-label="Breadcrumb" className="mb-6 text-sm text-muted-foreground">
+            <nav aria-label="Breadcrumb" className="mb-6 flex flex-wrap gap-x-2 gap-y-1 text-sm text-muted-foreground">
               <Link to="/" className="hover:text-primary">Home</Link>
-              <span className="mx-2">/</span>
+              <span>/</span>
               <Link to="/shop" className="hover:text-primary">Shop</Link>
               {product.category && (
                 <>
-                  <span className="mx-2">/</span>
+                  <span>/</span>
                   <Link to="/shop" search={{ category: product.category.slug }} className="hover:text-primary">{product.category.name}</Link>
                 </>
               )}
-              <span className="mx-2">/</span>
+              <span>/</span>
               <span className="text-foreground">{product.name}</span>
             </nav>
 
@@ -127,17 +127,17 @@ function ProductPage() {
                 {product.category && (
                   <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">{product.category.name}</p>
                 )}
-                <h1 className="mt-2 font-display text-3xl font-extrabold">{product.name}</h1>
-                <div className="mt-3 flex items-baseline gap-3">
-                  <span className="font-display text-3xl font-bold text-primary">${Number(product.price).toFixed(2)}</span>
+                <h1 className="mt-2 font-display text-2xl font-extrabold sm:text-3xl">{product.name}</h1>
+                <div className="mt-3 flex flex-wrap items-baseline gap-3">
+                  <span className="font-display text-2xl font-bold text-primary sm:text-3xl">${Number(product.price).toFixed(2)}</span>
                   {product.compare_at_price && Number(product.compare_at_price) > Number(product.price) && (
                     <span className="text-lg text-muted-foreground line-through">${Number(product.compare_at_price).toFixed(2)}</span>
                   )}
                 </div>
                 {product.short_description && <p className="mt-4 text-muted-foreground">{product.short_description}</p>}
 
-                <div className="mt-6 flex items-center gap-4">
-                  <div className="flex items-center overflow-hidden rounded-full border border-border">
+                <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                  <div className="flex items-center self-start overflow-hidden rounded-full border border-border">
                     <button onClick={() => setQty(Math.max(1, qty - 1))} className="grid size-10 place-items-center" aria-label="Decrease quantity"><Minus className="size-4" /></button>
                     <span className="w-10 text-center text-sm font-semibold">{qty}</span>
                     <button onClick={() => setQty(qty + 1)} className="grid size-10 place-items-center" aria-label="Increase quantity"><Plus className="size-4" /></button>
@@ -145,7 +145,7 @@ function ProductPage() {
                   <button
                     onClick={() => addItem(product.id, qty)}
                     disabled={product.stock < 1}
-                    className="flex-1 rounded-full bg-primary px-8 py-3 text-sm font-bold uppercase tracking-wide text-primary-foreground transition hover:bg-primary/90 disabled:opacity-50"
+                    className="w-full rounded-full bg-primary px-8 py-3 text-sm font-bold uppercase tracking-wide text-primary-foreground transition hover:bg-primary/90 disabled:opacity-50 sm:flex-1"
                   >
                     {product.stock < 1 ? "Out of stock" : "Add to cart"}
                   </button>

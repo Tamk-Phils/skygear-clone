@@ -16,6 +16,14 @@ export function AdminField({ label, children }: { label: string; children: React
   );
 }
 
+export function AdminTableWrap({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="overflow-x-auto rounded-lg border border-border">
+      <div className="min-w-0 sm:min-w-full">{children}</div>
+    </div>
+  );
+}
+
 export function AdminSectionHeader({
   title,
   description,
@@ -28,7 +36,7 @@ export function AdminSectionHeader({
   return (
     <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
       <div>
-        <h2 className="font-display text-xl font-bold">{title}</h2>
+        <h2 className="font-display text-lg font-bold sm:text-xl">{title}</h2>
         {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
       </div>
       {action}
@@ -50,7 +58,7 @@ export function StatCard({
   return (
     <div className={cn("rounded-lg border border-border bg-card p-5", accent && "border-primary/40 bg-primary/5")}>
       <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</div>
-      <div className={cn("mt-2 font-display text-3xl font-extrabold", accent && "text-primary")}>{value}</div>
+      <div className={cn("mt-2 font-display text-2xl font-extrabold sm:text-3xl", accent && "text-primary")}>{value}</div>
       {hint && <div className="mt-1 text-xs text-muted-foreground">{hint}</div>}
     </div>
   );

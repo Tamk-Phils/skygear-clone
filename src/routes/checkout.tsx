@@ -187,9 +187,9 @@ function CheckoutPage() {
         <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Secure checkout</p>
         <h1 className="mt-2 font-display text-3xl font-extrabold">Payment</h1>
 
-        <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]">
-          <form onSubmit={submit} className="space-y-6">
-            <section className="rounded-lg border border-border bg-card p-6">
+        <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_360px] lg:gap-8">
+          <form onSubmit={submit} className="min-w-0 space-y-6">
+            <section className="rounded-lg border border-border bg-card p-4 sm:p-6">
               <div className="flex items-center gap-2">
                 <CreditCard className="size-5 text-primary" />
                 <h2 className="font-display text-lg font-bold">Card details</h2>
@@ -252,7 +252,7 @@ function CheckoutPage() {
               </div>
             </section>
 
-            <section className="rounded-lg border border-border bg-card p-6">
+            <section className="rounded-lg border border-border bg-card p-4 sm:p-6">
               <h2 className="font-display text-lg font-bold">Billing contact</h2>
               <p className="mt-1 text-sm text-muted-foreground">{user.email}</p>
               <p className="mt-3 text-xs text-muted-foreground">
@@ -277,7 +277,7 @@ function CheckoutPage() {
             </p>
           </form>
 
-          <aside className="h-fit rounded-lg border border-border bg-card p-6">
+          <aside className="h-fit rounded-lg border border-border bg-card p-4 sm:p-6">
             <h3 className="font-display text-lg font-bold">Order summary</h3>
             <ul className="mt-4 space-y-3">
               {items.map((it) => (

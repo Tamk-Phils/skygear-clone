@@ -15,7 +15,7 @@ export function ContentPage({ eyebrow, title, subtitle, children }: ContentPageP
       <SiteHeader />
       <div className="mx-auto max-w-3xl px-4 py-14">
         <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">{eyebrow}</p>
-        <h1 className="mt-2 font-display text-4xl font-extrabold md:text-5xl">{title}</h1>
+        <h1 className="mt-2 font-display text-3xl font-extrabold sm:text-4xl md:text-5xl">{title}</h1>
         {subtitle && <p className="mt-3 text-muted-foreground">{subtitle}</p>}
         <div className="prose prose-sm mt-10 max-w-none text-foreground">{children}</div>
       </div>

@@ -24,13 +24,13 @@ export function ProductCard({ p }: { p: ProductCardData }) {
           <span className="absolute left-3 top-3 rounded-full bg-primary px-2.5 py-1 text-[10px] font-bold uppercase text-primary-foreground">Sale</span>
         )}
       </Link>
-      <div className="flex flex-1 flex-col gap-2 p-4">
+      <div className="flex flex-1 flex-col gap-2 p-3 sm:p-4">
         <Link to="/product/$slug" params={{ slug: p.slug }} className="line-clamp-2 text-sm font-semibold hover:text-primary">
           {p.name}
         </Link>
         <div className="mt-auto flex items-center justify-between">
           <div className="flex items-baseline gap-2">
-            <span className="font-display text-lg font-bold text-primary">${Number(p.price).toFixed(2)}</span>
+            <span className="font-display text-base font-bold text-primary sm:text-lg">${Number(p.price).toFixed(2)}</span>
             {p.compare_at_price && Number(p.compare_at_price) > Number(p.price) && (
               <span className="text-xs text-muted-foreground line-through">${Number(p.compare_at_price).toFixed(2)}</span>
             )}

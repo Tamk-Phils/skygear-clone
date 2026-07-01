@@ -63,9 +63,9 @@ export function SiteFooter() {
         <div>
           <h4 className="text-sm font-semibold uppercase tracking-wide text-primary">Newsletter</h4>
           <p className="mt-4 text-sm opacity-80">Drone news, new product launches, and pilot tips — straight to your inbox.</p>
-          <form className="mt-3 flex overflow-hidden rounded-full bg-white text-foreground" onSubmit={e => e.preventDefault()}>
-            <input type="email" placeholder="your@email.com" aria-label="Email for newsletter" className="flex-1 bg-transparent px-4 py-2 text-sm outline-none" />
-            <button type="submit" className="bg-primary px-4 text-sm font-semibold text-primary-foreground">Join</button>
+          <form className="mt-3 flex flex-col gap-2 overflow-hidden rounded-full bg-white text-foreground sm:flex-row" onSubmit={e => e.preventDefault()}>
+            <input type="email" placeholder="your@email.com" aria-label="Email for newsletter" className="min-w-0 flex-1 bg-transparent px-4 py-2 text-sm outline-none" />
+            <button type="submit" className="shrink-0 bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground sm:py-0">Join</button>
           </form>
           <ul className="mt-4 space-y-2 text-sm opacity-80">
             {LEGAL_LINKS.map(l => (

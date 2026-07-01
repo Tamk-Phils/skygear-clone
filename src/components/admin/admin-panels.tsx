@@ -24,6 +24,7 @@ import { Pencil, Plus, Search, Trash2, AlertTriangle } from "lucide-react";
 import {
   AdminField,
   AdminSectionHeader,
+  AdminTableWrap,
   StatCard,
   adminInput,
   slugify,
@@ -366,8 +367,8 @@ export function ProductsPanel() {
         }
       />
 
-      <div className="mb-4 flex flex-wrap gap-3">
-        <div className="relative min-w-[200px] flex-1">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+        <div className="relative min-w-0 flex-1 sm:min-w-[200px]">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <input
             value={search}
@@ -379,7 +380,7 @@ export function ProductsPanel() {
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
-          className={`${adminInput} w-auto min-w-[160px]`}
+          className={`${adminInput} w-full sm:w-auto sm:min-w-[160px]`}
         >
           <option value="">All categories</option>
           {cats?.map((c) => (
@@ -390,14 +391,14 @@ export function ProductsPanel() {
         </select>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-border">
+      <AdminTableWrap>
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Product</TableHead>
-              <TableHead>Price</TableHead>
+              <TableHead className="hidden sm:table-cell">Price</TableHead>
               <TableHead>Stock</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead className="hidden md:table-cell">Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -405,8 +406,8 @@ export function ProductsPanel() {
             {filtered.map((p) => (
               <TableRow key={p.id}>
                 <TableCell>
-                  <div className="flex items-center gap-3">
-                    <div className="size-12 overflow-hidden rounded bg-muted">
+                  <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+                    <div className="size-10 shrink-0 overflow-hidden rounded bg-muted sm:size-12">
                       <ProductImage
                         src={p.images?.[0]}
                         slug={p.slug}
@@ -414,21 +415,30 @@ export function ProductsPanel() {
                         className="size-full object-cover"
                       />
                     </div>
-                    <div>
-                      <div className="font-medium">{p.name}</div>
-                      <div className="text-xs text-muted-foreground">
+                    <div className="min-w-0">
+                      <div className="truncate font-medium">{p.name}</div>
+                      <div className="truncate text-xs text-muted-foreground">
                         {p.category?.name ?? "Uncategorized"} · /{p.slug}
+                      </div>
+                      <div className="mt-1 text-sm font-medium sm:hidden">${Number(p.price).toFixed(2)}</div>
+                      <div className="mt-1 flex flex-wrap gap-1 md:hidden">
+                        <button onClick={() => toggle(p.id, "is_published", !p.is_published)}>
+                          <Badge variant={p.is_published ? "default" : "secondary"}>
+                            {p.is_published ? "Published" : "Draft"}
+                          </Badge>
+                        </button>
+                        {p.is_featured && <Badge variant="outline">Featured</Badge>}
                       </div>
                     </div>
                   </div>
                 </TableCell>
-                <TableCell>${Number(p.price).toFixed(2)}</TableCell>
+                <TableCell className="hidden sm:table-cell">${Number(p.price).toFixed(2)}</TableCell>
                 <TableCell>
                   <span className={p.stock <= 5 ? "font-semibold text-amber-600" : ""}>
                     {p.stock}
                   </span>
                 </TableCell>
-                <TableCell>
+                <TableCell className="hidden md:table-cell">
                   <div className="flex flex-wrap gap-1">
                     <button onClick={() => toggle(p.id, "is_published", !p.is_published)}>
                       <Badge variant={p.is_published ? "default" : "secondary"}>
@@ -459,10 +469,10 @@ export function ProductsPanel() {
             )}
           </TableBody>
         </Table>
-      </div>
+      </AdminTableWrap>
 
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
-        <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto">
+        <DialogContent className="max-h-[90vh] w-[calc(100%-2rem)] max-w-lg overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editing ? "Edit product" : "Add product"}</DialogTitle>
           </DialogHeader>
@@ -489,7 +499,7 @@ export function ProductsPanel() {
                 className={adminInput}
               />
             </AdminField>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <AdminField label="Price ($)">
                 <input
                   required
@@ -651,13 +661,13 @@ export function CategoriesPanel() {
         }
       />
 
-      <div className="overflow-hidden rounded-lg border border-border">
+      <AdminTableWrap>
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Category</TableHead>
-              <TableHead>Slug</TableHead>
-              <TableHead>Sort</TableHead>
+              <TableHead className="hidden sm:table-cell">Slug</TableHead>
+              <TableHead className="hidden md:table-cell">Sort</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -665,8 +675,8 @@ export function CategoriesPanel() {
             {(cats as CategoryRow[] | undefined)?.map((c) => (
               <TableRow key={c.id}>
                 <TableCell>
-                  <div className="flex items-center gap-3">
-                    <div className="size-12 overflow-hidden rounded bg-muted">
+                  <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+                    <div className="size-10 shrink-0 overflow-hidden rounded bg-muted sm:size-12">
                       <ProductImage
                         src={c.image_url}
                         slug={c.slug}
@@ -674,11 +684,14 @@ export function CategoriesPanel() {
                         className="size-full object-cover"
                       />
                     </div>
-                    <span className="font-medium">{c.name}</span>
+                    <div className="min-w-0">
+                      <span className="font-medium">{c.name}</span>
+                      <div className="text-xs text-muted-foreground sm:hidden">/{c.slug}</div>
+                    </div>
                   </div>
                 </TableCell>
-                <TableCell className="text-muted-foreground">/{c.slug}</TableCell>
-                <TableCell>{c.sort_order}</TableCell>
+                <TableCell className="hidden text-muted-foreground sm:table-cell">/{c.slug}</TableCell>
+                <TableCell className="hidden md:table-cell">{c.sort_order}</TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-1">
                     <Button variant="ghost" size="icon" onClick={() => openEdit(c)}>
@@ -693,10 +706,10 @@ export function CategoriesPanel() {
             ))}
           </TableBody>
         </Table>
-      </div>
+      </AdminTableWrap>
 
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
-        <DialogContent>
+        <DialogContent className="w-[calc(100%-2rem)] max-w-lg">
           <DialogHeader>
             <DialogTitle>{editing ? "Edit category" : "Add category"}</DialogTitle>
           </DialogHeader>
@@ -805,7 +818,7 @@ export function OrdersPanel() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className={`${adminInput} w-auto min-w-[180px]`}
+          className={`${adminInput} w-full sm:w-auto sm:min-w-[180px]`}
         >
           <option value="">All statuses</option>
           {ORDER_STATUSES.map((s) => (
@@ -816,16 +829,16 @@ export function OrdersPanel() {
         </select>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
-        <div className="overflow-hidden rounded-lg border border-border">
+      <div className="grid gap-6">
+        <AdminTableWrap>
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Reference</TableHead>
-                <TableHead>Customer</TableHead>
+                <TableHead className="hidden sm:table-cell">Customer</TableHead>
                 <TableHead>Total</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Date</TableHead>
+                <TableHead className="hidden md:table-cell">Date</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -836,15 +849,20 @@ export function OrdersPanel() {
                   onClick={() => openOrder(o)}
                   data-state={selected?.id === o.id ? "selected" : undefined}
                 >
-                  <TableCell className="font-mono text-xs font-semibold">{o.order_ref}</TableCell>
-                  <TableCell className="text-sm">{o.customer_email ?? "—"}</TableCell>
+                  <TableCell>
+                    <div className="font-mono text-xs font-semibold">{o.order_ref}</div>
+                    <div className="mt-0.5 truncate text-xs text-muted-foreground sm:hidden">
+                      {o.customer_email ?? "—"}
+                    </div>
+                  </TableCell>
+                  <TableCell className="hidden text-sm sm:table-cell">{o.customer_email ?? "—"}</TableCell>
                   <TableCell>${Number(o.total).toFixed(2)}</TableCell>
                   <TableCell>
                     <Badge variant={o.status === "pending" ? "secondary" : "default"}>
                       {statusLabel(o.status)}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-xs text-muted-foreground">
+                  <TableCell className="hidden text-xs text-muted-foreground md:table-cell">
                     {new Date(o.created_at).toLocaleDateString()}
                   </TableCell>
                 </TableRow>
@@ -858,7 +876,7 @@ export function OrdersPanel() {
               )}
             </TableBody>
           </Table>
-        </div>
+        </AdminTableWrap>
 
         <div className="h-fit rounded-lg border border-border bg-muted/30 p-4">
           {selected ? (
@@ -972,14 +990,14 @@ export function UsersPanel() {
         description="Manage customer accounts and admin access."
       />
 
-      <div className="overflow-hidden rounded-lg border border-border">
+      <AdminTableWrap>
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>User</TableHead>
-              <TableHead>Email</TableHead>
+              <TableHead className="hidden md:table-cell">Email</TableHead>
               <TableHead>Roles</TableHead>
-              <TableHead>Joined</TableHead>
+              <TableHead className="hidden lg:table-cell">Joined</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -995,10 +1013,15 @@ export function UsersPanel() {
                 const isAdmin = u.roles?.includes("admin");
                 return (
                   <TableRow key={u.user_id}>
-                    <TableCell className="font-medium">
-                      {u.display_name ?? u.user_id.slice(0, 8) + "…"}
+                    <TableCell>
+                      <div className="min-w-0">
+                        <div className="truncate font-medium">
+                          {u.display_name ?? u.user_id.slice(0, 8) + "…"}
+                        </div>
+                        <div className="truncate text-xs text-muted-foreground md:hidden">{u.email}</div>
+                      </div>
                     </TableCell>
-                    <TableCell className="text-sm">{u.email}</TableCell>
+                    <TableCell className="hidden text-sm md:table-cell">{u.email}</TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
                         {(u.roles?.length ? u.roles : ["customer"]).map((r) => (
@@ -1008,16 +1031,18 @@ export function UsersPanel() {
                         ))}
                       </div>
                     </TableCell>
-                    <TableCell className="text-xs text-muted-foreground">
+                    <TableCell className="hidden text-xs text-muted-foreground lg:table-cell">
                       {new Date(u.created_at).toLocaleDateString()}
                     </TableCell>
                     <TableCell className="text-right">
                       <Button
                         variant="outline"
                         size="sm"
+                        className="text-xs sm:text-sm"
                         onClick={() => toggleAdmin(u.user_id, !!isAdmin)}
                       >
-                        {isAdmin ? "Revoke admin" : "Make admin"}
+                        <span className="hidden sm:inline">{isAdmin ? "Revoke admin" : "Make admin"}</span>
+                        <span className="sm:hidden">{isAdmin ? "Revoke" : "Admin"}</span>
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -1026,7 +1051,7 @@ export function UsersPanel() {
             )}
           </TableBody>
         </Table>
-      </div>
+      </AdminTableWrap>
     </div>
   );
 }

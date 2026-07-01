@@ -45,8 +45,8 @@ function CartPage() {
           <div className="mt-8 grid gap-8 md:grid-cols-[1fr_320px]">
             <div className="divide-y divide-border rounded-lg border border-border bg-card">
               {items.map(it => (
-                <div key={it.id} className="flex gap-4 p-4">
-                  <div className="size-24 shrink-0 overflow-hidden rounded bg-muted">
+                <div key={it.id} className="flex gap-3 p-4 sm:gap-4">
+                  <div className="size-20 shrink-0 overflow-hidden rounded bg-muted sm:size-24">
                     <ProductImage
                       src={it.product.images?.[0]}
                       slug={it.product.slug}
@@ -54,19 +54,24 @@ function CartPage() {
                       className="size-full object-cover"
                     />
                   </div>
-                  <div className="flex flex-1 flex-col">
-                    <Link to="/product/$slug" params={{ slug: it.product.slug }} className="font-semibold hover:text-primary">{it.product.name}</Link>
-                    <div className="mt-1 text-sm text-primary font-semibold">${Number(it.product.price).toFixed(2)}</div>
-                    <div className="mt-auto flex items-center justify-between">
+                  <div className="flex min-w-0 flex-1 flex-col">
+                    <Link to="/product/$slug" params={{ slug: it.product.slug }} className="line-clamp-2 font-semibold hover:text-primary">{it.product.name}</Link>
+                    <div className="mt-1 text-sm font-semibold text-primary">${Number(it.product.price).toFixed(2)}</div>
+                    <div className="mt-auto flex items-center justify-between gap-2 pt-3">
                       <div className="flex items-center overflow-hidden rounded-full border border-border">
                         <button onClick={() => updateItem(it.id, it.quantity - 1)} className="grid size-8 place-items-center"><Minus className="size-3" /></button>
                         <span className="w-8 text-center text-sm">{it.quantity}</span>
                         <button onClick={() => updateItem(it.id, it.quantity + 1)} className="grid size-8 place-items-center"><Plus className="size-3" /></button>
                       </div>
-                      <button onClick={() => removeItem(it.id)} className="text-muted-foreground hover:text-destructive"><Trash2 className="size-4" /></button>
+                      <div className="flex items-center gap-3">
+                        <span className="font-semibold sm:hidden">${(Number(it.product.price) * it.quantity).toFixed(2)}</span>
+                        <button onClick={() => removeItem(it.id)} className="text-muted-foreground hover:text-destructive"><Trash2 className="size-4" /></button>
+                      </div>
                     </div>
                   </div>
-                  <div className="text-right font-semibold">${(Number(it.product.price) * it.quantity).toFixed(2)}</div>
+                  <div className="hidden shrink-0 text-right font-semibold sm:block">
+                    ${(Number(it.product.price) * it.quantity).toFixed(2)}
+                  </div>
                 </div>
               ))}
             </div>
