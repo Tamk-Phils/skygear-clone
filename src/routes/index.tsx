@@ -1,14 +1,29 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ProductCard, type ProductCardData } from "@/components/product-card";
-import heroImg from "@/assets/hero-drone.jpg";
-import { Truck, ShieldCheck, Headphones, RefreshCw, Camera, MapPin, Zap, Star } from "lucide-react";
+import { HomeHeroCarousel } from "@/components/home-hero-carousel";
+import { ProductRating } from "@/components/product-rating";
+import {
+  Truck,
+  ShieldCheck,
+  Headphones,
+  RefreshCw,
+  Building2,
+  Shield,
+  Zap,
+  Sprout,
+  BadgeCheck,
+  CreditCard,
+  Package,
+} from "lucide-react";
 import { buildMeta } from "@/lib/seo";
-import { resolveImageUrl } from "@/lib/images";
+import { IMAGES, resolveImageUrl } from "@/lib/images";
 import { ProductImage } from "@/components/product-image";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({
   head: () => {
@@ -23,46 +38,91 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-const TESTIMONIALS = [
-  {
-    quote:
-      "The SkyGear Pro X1 replaced our entire ENG helicopter budget for location scouts. 46-minute flight time is no marketing fluff — we timed it at altitude in Montana.",
-    author: "Sarah Chen",
-    role: "Director of Photography, Cascade Films",
-  },
-  {
-    quote:
-      "We mapped 400 acres in two days with the Pro X1. RTK accuracy beat our previous fixed-wing setup and the repairable arms saved us after a tree strike.",
-    author: "Marcus Webb",
-    role: "GIS Surveyor, TerraScan LLC",
-  },
-  {
-    quote:
-      "Best FPV platform I've flown in five years of racing. The carbon frame takes crashes that would total other rigs. Spare parts shipped next day.",
-    author: "Jake Ortiz",
-    role: "FPV Freestyle Pilot",
-  },
-];
+const CATEGORY_SPOTLIGHTS = [
+  { slug: "drones", badge: "Best trending", title: "Drones", cta: "Shop now", image: IMAGES.categories.drones },
+  { slug: "gimbals", badge: "Top rated", title: "Gimbals & cameras", cta: "View collection", image: IMAGES.categories.gimbals },
+  { slug: "accessories", badge: "Trending", title: "Accessories", cta: "Buy now", image: IMAGES.categories.accessories },
+] as const;
 
-const USE_CASES = [
+const INDUSTRIES = [
   {
-    icon: Camera,
-    title: "Aerial filmmaking & photography",
-    desc: "4K and 8K camera drones with cinema-grade sensors, ND filters, and rock-steady 3-axis gimbals for wedding films, documentaries, and commercial shoots.",
+    icon: Shield,
+    title: "Public safety",
+    desc: "Extend your vision and ensure new levels of safety for first responders and search teams.",
+    image: IMAGES.categories.drones,
   },
   {
-    icon: MapPin,
-    title: "Surveying & inspection",
-    desc: "Professional UAV platforms for photogrammetry, orthomosaic mapping, construction monitoring, and infrastructure inspection with centimeter-level accuracy.",
+    icon: Building2,
+    title: "Construction",
+    desc: "Manage your projects with higher precision, progress tracking, and site efficiency.",
+    image: IMAGES.products["skygear-pro-x1"],
   },
   {
     icon: Zap,
-    title: "FPV racing & freestyle",
-    desc: "Carbon-frame FPV racing drones built for 140 km/h top speeds, low-latency HD video, and modular repairs after the inevitable crash landing.",
+    title: "Energy",
+    desc: "Advance your operations with increased accuracy for line inspection and asset monitoring.",
+    image: IMAGES.categories.batteries,
+  },
+  {
+    icon: Sprout,
+    title: "Agriculture",
+    desc: "Make your farming smart and profitable with crop mapping and precision spraying workflows.",
+    image: IMAGES.categories.accessories,
   },
 ];
 
+const TRUST_POINTS = [
+  { icon: BadgeCheck, text: "Authorized SkyGear equipment — genuine products with manufacturer warranty" },
+  { icon: ShieldCheck, text: "8+ years of trust — voted a top online drone shop by pilots worldwide" },
+  { icon: Package, text: "Best prices & exclusive deals — save more on professional UAV gear" },
+  { icon: Truck, text: "Free & fast shipping — secure delivery on qualifying drone orders" },
+  { icon: CreditCard, text: "Flexible checkout — secure card payment with pilot support confirmation" },
+];
+
+const TESTIMONIALS = [
+  {
+    quote: "The camera quality on SkyGear drones is exceptional. 4K HDR footage looks stunning for both amateur and professional aerial work.",
+    author: "Serena K.",
+    handle: "@sera",
+    role: "Aerial photographer",
+  },
+  {
+    quote: "Stabilization holds up even in windy conditions — a reliable choice for filmmakers and content creators on location.",
+    author: "John D.",
+    handle: "@john",
+    role: "Commercial videographer",
+  },
+  {
+    quote: "The accessory selection complements the drone experience perfectly — batteries, cases, and ND filters all in one place.",
+    author: "Steven M.",
+    handle: "@steev",
+    role: "FPV pilot",
+  },
+  {
+    quote: "ND filters give much better exposure control in bright conditions — a serious advantage for outdoor shoots.",
+    author: "David L.",
+    handle: "@david",
+    role: "Documentary DP",
+  },
+  {
+    quote: "Customer service is top-notch. The team helped me pick the right drone and answered every spec question promptly.",
+    author: "Godwill A.",
+    handle: "@will",
+    role: "Survey contractor",
+  },
+  {
+    quote: "Comprehensive guides on the site made setup easy. I felt supported from purchase through first flight.",
+    author: "Ashley R.",
+    handle: "@ash",
+    role: "Hobbyist pilot",
+  },
+];
+
+type ProductTab = "featured" | "bestsellers" | "onsale";
+
 function Home() {
+  const [productTab, setProductTab] = useState<ProductTab>("featured");
+
   const { data: categories } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
@@ -72,49 +132,39 @@ function Home() {
     },
   });
 
-  const { data: featured } = useQuery({
-    queryKey: ["featured-products"],
+  const { data: products } = useQuery({
+    queryKey: ["home-products"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("products")
-        .select("id,name,slug,price,compare_at_price,images")
+      const { data, error } = await supabase
+        .from("products")
+        .select("id,name,slug,price,compare_at_price,images,is_featured")
         .eq("is_published", true)
         .order("is_featured", { ascending: false })
         .order("created_at", { ascending: false })
-        .limit(8);
+        .limit(12);
       if (error) throw error;
       return data as ProductCardData[];
     },
   });
 
+  const tabProducts = useMemo(() => {
+    const rows = products ?? [];
+    if (productTab === "bestsellers") return rows.slice(0, 8);
+    if (productTab === "onsale") {
+      return rows.filter((p) => p.compare_at_price && Number(p.compare_at_price) > Number(p.price)).slice(0, 8);
+    }
+    return rows.filter((p) => p.is_featured).slice(0, 8).length
+      ? rows.filter((p) => p.is_featured).slice(0, 8)
+      : rows.slice(0, 8);
+  }, [products, productTab]);
+
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
 
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <img src={heroImg} alt="Professional camera drone flying at sunset for aerial photography" width={1920} height={900} className="absolute inset-0 size-full object-cover" />
-        <div className="absolute inset-0 bg-navy/40" />
-        <div className="relative mx-auto flex max-w-7xl flex-col items-center px-4 py-20 text-center text-white sm:py-32 md:py-44">
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary">Welcome to</p>
-          <h1 className="mt-3 font-display text-3xl font-extrabold tracking-tight sm:text-5xl md:text-7xl">
-            SkyGear Drones<span className="text-primary">®</span>
-          </h1>
-          <p className="mt-4 max-w-xl text-sm text-white/85 sm:text-base">
-            Professional camera drones, FPV racing quadcopters, cinema UAVs, intelligent flight
-            batteries, gimbals and accessories — gear built by pilots, for pilots.
-          </p>
-          <div className="mt-8 flex w-full max-w-md flex-col justify-center gap-3 sm:max-w-none sm:flex-row sm:flex-wrap sm:gap-4">
-            <Link to="/shop" className="rounded-full bg-primary px-8 py-3 text-center text-sm font-bold uppercase tracking-wide text-primary-foreground transition hover:bg-primary/90">
-              Shop Drones
-            </Link>
-            <Link to="/guides" className="rounded-full border border-white/40 px-8 py-3 text-center text-sm font-bold uppercase tracking-wide text-white transition hover:border-primary hover:text-primary">
-              Buying Guides
-            </Link>
-          </div>
-        </div>
-      </section>
+      <HomeHeroCarousel />
 
-      {/* Feature strip */}
+      {/* Trust strip */}
       <section className="border-b border-border bg-card">
         <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:grid-cols-2 md:grid-cols-4">
           {[
@@ -136,27 +186,138 @@ function Home() {
         </div>
       </section>
 
-      {/* Use cases */}
-      <section className="mx-auto max-w-7xl px-4 py-16">
-        <SectionHeading title="Drones for every mission" />
-        <div className="mt-8 grid gap-6 md:grid-cols-3">
-          {USE_CASES.map(({ icon: Icon, title, desc }) => (
-            <div key={title} className="rounded-lg border border-border bg-card p-6">
-              <Icon className="size-8 text-primary" />
-              <h3 className="mt-4 font-display text-lg font-bold">{title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{desc}</p>
-            </div>
+      {/* Category spotlights — buydjidrone-style large promo blocks */}
+      <section className="mx-auto max-w-7xl px-4 py-14">
+        <SectionHeading title="Shop by collection" />
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
+          {CATEGORY_SPOTLIGHTS.map((c) => (
+            <Link
+              key={c.slug}
+              to="/shop"
+              search={{ category: c.slug }}
+              className="group relative min-h-[220px] overflow-hidden rounded-xl sm:min-h-[280px]"
+            >
+              <img
+                src={c.image}
+                alt={c.title}
+                className="absolute inset-0 size-full object-cover transition duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/40 to-transparent" />
+              <div className="relative flex h-full flex-col justify-end p-6 text-white">
+                <p className="text-xs font-bold uppercase tracking-[0.25em] text-primary">{c.badge}</p>
+                <h3 className="mt-2 font-display text-2xl font-extrabold sm:text-3xl">{c.title}</h3>
+                <span className="mt-4 inline-flex w-fit rounded-full border border-white/40 px-5 py-2 text-xs font-bold uppercase tracking-wide transition group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground">
+                  {c.cta}
+                </span>
+              </div>
+            </Link>
           ))}
         </div>
       </section>
 
-      {/* Categories */}
+      {/* Enterprise industries */}
+      <section className="bg-navy text-navy-foreground">
+        <div className="mx-auto max-w-7xl px-4 py-14">
+          <div className="max-w-3xl">
+            <p className="text-xs font-bold uppercase tracking-[0.3em] text-primary">Enterprise solutions</p>
+            <h2 className="mt-2 font-display text-2xl font-extrabold sm:text-3xl md:text-4xl">
+              Specializing in drone technology for diverse industries
+            </h2>
+            <p className="mt-4 text-sm opacity-85 sm:text-base">
+              Our team of drone experts develops and supports comprehensive UAV solutions for organizations
+              across public safety, construction, energy, and agriculture. Contact us for fleet recommendations.
+            </p>
+          </div>
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {INDUSTRIES.map(({ icon: Icon, title, desc, image }) => (
+              <div key={title} className="group overflow-hidden rounded-lg border border-white/10 bg-white/5">
+                <div className="aspect-[4/3] overflow-hidden">
+                  <img
+                    src={image}
+                    alt={title}
+                    className="size-full object-cover transition duration-500 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="p-5">
+                  <Icon className="size-6 text-primary" />
+                  <h3 className="mt-3 font-display text-lg font-bold">{title}</h3>
+                  <p className="mt-2 text-sm opacity-80">{desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-8 text-center">
+            <Link
+              to="/contact"
+              className="inline-flex rounded-full bg-primary px-8 py-3 text-sm font-bold uppercase tracking-wide text-primary-foreground hover:bg-primary/90"
+            >
+              Contact enterprise sales
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Product tabs */}
+      <section className="mx-auto max-w-7xl px-4 py-14">
+        <SectionHeading title="Featured products" />
+        <div className="mt-6 flex flex-wrap gap-2 border-b border-border pb-4">
+          {(
+            [
+              { id: "featured", label: "Featured" },
+              { id: "bestsellers", label: "Best sellers" },
+              { id: "onsale", label: "On sale" },
+            ] as const
+          ).map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setProductTab(tab.id)}
+              className={cn(
+                "rounded-full px-5 py-2 text-sm font-semibold uppercase tracking-wide transition",
+                productTab === tab.id
+                  ? "bg-primary text-primary-foreground"
+                  : "border border-border text-muted-foreground hover:border-primary hover:text-primary",
+              )}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+        <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+          {tabProducts.length > 0 ? (
+            tabProducts.map((p) => <ProductCard key={p.id} p={p} />)
+          ) : (
+            <p className="col-span-full py-12 text-center text-sm text-muted-foreground">
+              No products in this collection yet.{" "}
+              <Link to="/shop" className="text-primary hover:underline">
+                Browse the full shop
+              </Link>
+            </p>
+          )}
+        </div>
+        <div className="mt-8 text-center">
+          <Link
+            to="/shop"
+            className="inline-block rounded-full border border-border px-8 py-3 text-sm font-bold uppercase tracking-wide hover:border-primary hover:text-primary"
+          >
+            View all products
+          </Link>
+        </div>
+      </section>
+
+      {/* All categories grid */}
       <section className="bg-card">
-        <div className="mx-auto max-w-7xl px-4 py-16">
-          <SectionHeading title="Shop by category" />
+        <div className="mx-auto max-w-7xl px-4 py-14">
+          <SectionHeading title="Top trending categories" />
           <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
-            {(categories ?? []).map(c => (
-              <Link key={c.id} to="/shop" search={{ category: c.slug }} className="group flex flex-col overflow-hidden rounded-lg border border-border bg-background">
+            {(categories ?? []).map((c) => (
+              <Link
+                key={c.id}
+                to="/shop"
+                search={{ category: c.slug }}
+                className="group flex flex-col overflow-hidden rounded-lg border border-border bg-background transition hover:border-primary/40 hover:shadow-md"
+              >
                 <div className="aspect-square overflow-hidden bg-muted">
                   <ProductImage
                     src={resolveImageUrl(c.image_url, c.slug)}
@@ -173,33 +334,61 @@ function Home() {
         </div>
       </section>
 
-      {/* Featured products */}
-      <section className="mx-auto max-w-7xl px-4 py-16">
-        <SectionHeading title="Featured drones & accessories" />
-        <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-          {(featured ?? []).map(p => <ProductCard key={p.id} p={p} />)}
-        </div>
-        <div className="mt-8 text-center">
-          <Link to="/shop" className="inline-block rounded-full border border-border px-8 py-3 text-sm font-bold uppercase tracking-wide hover:border-primary hover:text-primary">
-            View all products
-          </Link>
+      {/* About / trust */}
+      <section className="mx-auto max-w-7xl px-4 py-14">
+        <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.3em] text-primary">About us</p>
+            <h2 className="mt-2 font-display text-2xl font-extrabold sm:text-3xl md:text-4xl">
+              SkyGear Drones — built for pilots who take the shot seriously
+            </h2>
+            <p className="mt-4 text-sm text-muted-foreground sm:text-base">
+              Whether you&apos;re a professional filmmaker, aerial photographer, FPV racer, or hobbyist, we offer
+              the latest SkyGear drones at competitive prices — with free shipping on qualifying orders and
+              expert pilot support on every purchase.
+            </p>
+            <ul className="mt-6 space-y-3">
+              {TRUST_POINTS.map(({ icon: Icon, text }) => (
+                <li key={text} className="flex gap-3 text-sm text-muted-foreground">
+                  <Icon className="mt-0.5 size-5 shrink-0 text-primary" />
+                  <span>{text}</span>
+                </li>
+              ))}
+            </ul>
+            <Link
+              to="/about"
+              className="mt-8 inline-flex rounded-full bg-primary px-8 py-3 text-sm font-bold uppercase tracking-wide text-primary-foreground hover:bg-primary/90"
+            >
+              Learn more
+            </Link>
+          </div>
+          <div className="overflow-hidden rounded-xl border border-border">
+            <img
+              src={IMAGES.products["skygear-cinema-8k"]}
+              alt="SkyGear cinema drone"
+              className="aspect-[4/3] size-full object-cover"
+              loading="lazy"
+            />
+          </div>
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="bg-navy text-navy-foreground">
-        <div className="mx-auto max-w-7xl px-4 py-16">
-          <SectionHeading title="Trusted by pilots worldwide" light />
-          <div className="mt-8 grid gap-6 md:grid-cols-3">
-            {TESTIMONIALS.map(t => (
-              <blockquote key={t.author} className="rounded-lg border border-white/10 bg-white/5 p-6">
-                <div className="flex gap-1 text-primary">
-                  {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="size-4 fill-current" />)}
-                </div>
-                <p className="mt-4 text-sm leading-relaxed opacity-90">&ldquo;{t.quote}&rdquo;</p>
-                <footer className="mt-4">
+      {/* Testimonials carousel-style grid */}
+      <section className="border-y border-border bg-muted/40">
+        <div className="mx-auto max-w-7xl px-4 py-14">
+          <SectionHeading title="What pilots are saying" />
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {TESTIMONIALS.map((t) => (
+              <blockquote
+                key={t.author}
+                className="rounded-lg border border-border bg-card p-5 shadow-sm"
+              >
+                <ProductRating rating={5} compact />
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">&ldquo;{t.quote}&rdquo;</p>
+                <footer className="mt-4 border-t border-border pt-4">
                   <div className="text-sm font-semibold">{t.author}</div>
-                  <div className="text-xs opacity-70">{t.role}</div>
+                  <div className="text-xs text-primary">{t.handle}</div>
+                  <div className="text-xs text-muted-foreground">{t.role}</div>
                 </footer>
               </blockquote>
             ))}
@@ -208,7 +397,7 @@ function Home() {
       </section>
 
       {/* SEO content block */}
-      <section className="mx-auto max-w-7xl px-4 py-16">
+      <section className="mx-auto max-w-7xl px-4 py-14">
         <h2 className="font-display text-2xl font-extrabold md:text-3xl">
           Your source for professional drone equipment
         </h2>
@@ -223,22 +412,35 @@ function Home() {
             Whether you need a 4K HDR camera drone for wedding filmmaking, a sub-250g foldable travel
             drone for international shoots, an 8K cinema drone with ProRes RAW, or a carbon-frame FPV
             racer for freestyle flying — SkyGear builds repairable, pilot-tested equipment with
-            direct-to-pilot pricing. Browse our <Link to="/shop" className="text-primary hover:underline">drone shop</Link>,
-            read our <Link to="/guides" className="text-primary hover:underline">buying guides</Link>, or
-            <Link to="/contact" className="text-primary hover:underline"> contact our pilot support team</Link>.
+            direct-to-pilot pricing. Browse our{" "}
+            <Link to="/shop" className="text-primary hover:underline">
+              drone shop
+            </Link>
+            , read our{" "}
+            <Link to="/guides" className="text-primary hover:underline">
+              buying guides
+            </Link>
+            , or{" "}
+            <Link to="/contact" className="text-primary hover:underline">
+              contact our pilot support team
+            </Link>
+            .
           </p>
         </div>
       </section>
 
       {/* CTA */}
       <section className="border-t border-border bg-card">
-        <div className="mx-auto flex max-w-7xl flex-col items-center px-4 py-16 text-center">
-          <h2 className="font-display text-3xl font-extrabold">Ready to take flight?</h2>
+        <div className="mx-auto flex max-w-7xl flex-col items-center px-4 py-14 text-center">
+          <h2 className="font-display text-2xl font-extrabold sm:text-3xl">Order now &amp; experience the future of flight</h2>
           <p className="mt-3 max-w-lg text-muted-foreground">
-            Join 60,000+ pilots who trust SkyGear for professional drones, batteries, gimbals and
-            accessories. Free shipping on orders over $300.
+            Don&apos;t miss out on the best SkyGear drone deals. Shop today for fast shipping, premium
+            customer support, and unbeatable pilot-direct pricing.
           </p>
-          <Link to="/shop" className="mt-6 rounded-full bg-primary px-10 py-3 text-sm font-bold uppercase text-primary-foreground hover:bg-primary/90">
+          <Link
+            to="/shop"
+            className="mt-6 rounded-full bg-primary px-10 py-3 text-sm font-bold uppercase text-primary-foreground hover:bg-primary/90"
+          >
             Shop now
           </Link>
         </div>
@@ -252,7 +454,7 @@ function Home() {
 function SectionHeading({ title, light }: { title: string; light?: boolean }) {
   return (
     <div className={`flex items-end justify-between border-b-2 pb-3 ${light ? "border-white/20" : "border-border"}`}>
-      <h2 className="font-display text-2xl font-extrabold uppercase tracking-tight md:text-3xl">
+      <h2 className="font-display text-xl font-extrabold uppercase tracking-tight sm:text-2xl md:text-3xl">
         <span className="border-b-4 border-primary pb-3">{title}</span>
       </h2>
     </div>

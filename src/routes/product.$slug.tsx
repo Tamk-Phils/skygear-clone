@@ -7,6 +7,7 @@ import { useCart } from "@/lib/cart-context";
 import { useState } from "react";
 import { Minus, Plus } from "lucide-react";
 import { ProductImage } from "@/components/product-image";
+import { ProductRating } from "@/components/product-rating";
 import { buildMeta, productJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 import { resolveProductImages } from "@/lib/images";
 
@@ -128,6 +129,7 @@ function ProductPage() {
                   <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">{product.category.name}</p>
                 )}
                 <h1 className="mt-2 font-display text-2xl font-extrabold sm:text-3xl">{product.name}</h1>
+                <ProductRating rating={5} className="mt-3" />
                 <div className="mt-3 flex flex-wrap items-baseline gap-3">
                   <span className="font-display text-2xl font-bold text-primary sm:text-3xl">${Number(product.price).toFixed(2)}</span>
                   {product.compare_at_price && Number(product.compare_at_price) > Number(product.price) && (

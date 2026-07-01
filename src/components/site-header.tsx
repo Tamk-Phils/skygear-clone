@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Search, ShoppingBag, User, Facebook, Twitter, Menu, X, LayoutGrid } from "lucide-react";
+import { Search, ShoppingBag, User, Facebook, Twitter, Menu, X, LayoutGrid, Phone } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useCart } from "@/lib/cart-context";
 import { useState } from "react";
@@ -38,6 +38,10 @@ export function SiteHeader() {
             FREE SHIPPING ON DRONE ORDERS OVER $300
           </span>
           <div className="flex shrink-0 items-center gap-3 opacity-90">
+            <a href="tel:+15035550142" className="hidden items-center gap-1 hover:text-primary sm:flex">
+              <Phone className="size-3.5" />
+              +1 (503) 555-0142
+            </a>
             <a href="https://facebook.com/skygeardrones" aria-label="Facebook"><Facebook className="size-4" /></a>
             <a href="https://twitter.com/skygeardrones" aria-label="Twitter"><Twitter className="size-4" /></a>
             <a href="#contact" className="hidden md:inline hover:text-primary">NEWSLETTER</a>
@@ -131,7 +135,7 @@ export function SiteHeader() {
               onBlur={() => setTimeout(() => setCatsOpen(false), 150)}
               className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide hover:text-primary"
             >
-              <LayoutGrid className="size-4" /> Browse Categories
+              <LayoutGrid className="size-4" /> Shop by categories
             </button>
             {catsOpen && (
               <div className="absolute left-0 top-full z-50 mt-1 w-48 rounded-md border border-border bg-card py-2 shadow-lg">
