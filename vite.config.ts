@@ -1,6 +1,7 @@
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
+import netlify from "@netlify/vite-plugin-tanstack-start";
 import { nitro } from "nitro/vite";
 import { defineConfig, loadEnv } from "vite";
 import tsConfigPaths from "vite-tsconfig-paths";
@@ -10,6 +11,8 @@ export default defineConfig(({ command, mode }) => {
   for (const [key, value] of Object.entries(loadEnv(mode, process.cwd(), "VITE_"))) {
     envDefine[`import.meta.env.${key}`] = JSON.stringify(value);
   }
+
+  const isNetlify = process.env.NETLIFY === "true";
 
   const plugins = [
     tailwindcss(),
@@ -25,14 +28,16 @@ export default defineConfig(({ command, mode }) => {
       server: { entry: "server" },
     }),
     ...(command === "build"
-      ? [
-          nitro({
-            defaultPreset: "cloudflare-module",
-            externals: {
-              trace: false,
-            },
-          } as any),
-        ]
+      ? isNetlify
+        ? [netlify()]
+        : [
+            nitro({
+              defaultPreset: "cloudflare-module",
+              externals: {
+                trace: false,
+              },
+            } as any),
+          ]
       : []),
     viteReact(),
   ];
