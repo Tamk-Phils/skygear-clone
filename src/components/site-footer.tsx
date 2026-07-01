@@ -16,9 +16,12 @@ export function SiteFooter() {
           </ul>
         </div>
         <div>
-          <h4 className="text-sm font-semibold uppercase tracking-wide text-primary">Support</h4>
+          <h4 className="text-sm font-semibold uppercase tracking-wide text-primary">Company</h4>
           <ul className="mt-4 space-y-2 text-sm opacity-80">
-            <li>Contact us</li><li>Shipping</li><li>Returns</li><li>Track order</li>
+            <li><a href="/about" className="hover:text-primary">About</a></li>
+            <li><a href="/contact" className="hover:text-primary">Contact</a></li>
+            <li><a href="/shop" className="hover:text-primary">Shop</a></li>
+            <li><a href="#" className="hover:text-primary">Warranty & returns</a></li>
           </ul>
         </div>
         <div>
