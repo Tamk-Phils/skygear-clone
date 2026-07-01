@@ -33,8 +33,8 @@ const CATEGORY_SEO: Record<string, { title: string; description: string }> = {
 
 export const Route = createFileRoute("/shop")({
   validateSearch: search,
-  head: (ctx) => {
-    const s = ctx.search || {};
+  head: ({ match }) => {
+    const s = match.search || {};
     const cat = s.category ? CATEGORY_SEO[s.category] : undefined;
     const seo = buildMeta({
       title: cat?.title ?? (s.q ? `Search: ${s.q}` : "Shop Drones, Batteries & Accessories"),

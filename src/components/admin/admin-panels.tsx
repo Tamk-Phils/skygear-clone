@@ -349,7 +349,7 @@ export function ProductsPanel() {
   };
 
   const toggle = async (id: string, field: "is_published" | "is_featured", value: boolean) => {
-    const { error } = await supabase.from("products").update({ [field]: value }).eq("id", id);
+    const { error } = await supabase.from("products").update({ [field]: value } as any).eq("id", id);
     if (error) return toast.error(error.message);
     qc.invalidateQueries({ queryKey: ["admin-products"] });
   };
