@@ -34,16 +34,14 @@ export function SiteHeader() {
       <div className="bg-navy text-navy-foreground text-[11px] sm:text-xs">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-2">
           <span className="truncate font-medium tracking-wide">
-            <span className="hidden sm:inline opacity-80 mr-3">ENGLISH |</span>
-            FREE SHIPPING ON DRONE ORDERS OVER $300
+            <span className="hidden sm:inline opacity-80 mr-3">SKYGEAR |</span>
+            Bright visuals • Pilot support • 2-year warranty
           </span>
           <div className="flex shrink-0 items-center gap-3 opacity-90">
             <a href="tel:+15035550142" className="hidden items-center gap-1 hover:text-primary sm:flex">
               <Phone className="size-3.5" />
               +1 (503) 555-0142
             </a>
-            <a href="https://facebook.com/skygeardrones" aria-label="Facebook"><Facebook className="size-4" /></a>
-            <a href="https://twitter.com/skygeardrones" aria-label="Twitter"><Twitter className="size-4" /></a>
             <a href="#contact" className="hidden md:inline hover:text-primary">NEWSLETTER</a>
           </div>
         </div>

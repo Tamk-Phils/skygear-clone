@@ -4,12 +4,21 @@ import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { useCart } from "@/lib/cart-context";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Minus, Plus } from "lucide-react";
 import { ProductImage } from "@/components/product-image";
 import { ProductRating } from "@/components/product-rating";
 import { buildMeta, productJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 import { resolveProductImages, isVideoUrl } from "@/lib/images";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  type CarouselApi,
+} from "@/components/ui/carousel";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/product/$slug")({
   loader: async ({ params }) => {
@@ -68,7 +77,8 @@ function ProductPage() {
   const { slug } = Route.useParams();
   const { addItem } = useCart();
   const [qty, setQty] = useState(1);
-  const [activeImg, setActiveImg] = useState(0);
+  const [api, setApi] = useState<CarouselApi>();
+  const [active, setActive] = useState(0);
 
   const { data: product, isLoading } = useQuery({
     queryKey: ["product", slug],
@@ -83,6 +93,14 @@ function ProductPage() {
   });
 
   const images = product ? resolveProductImages(product.images, product.slug) : [];
+
+  useEffect(() => {
+    if (!api) return;
+    const onSelect = () => setActive(api.selectedScrollSnap());
+    api.on("select", onSelect);
+    onSelect();
+    return () => api.off("select", onSelect);
+  }, [api]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -106,40 +124,77 @@ function ProductPage() {
 
             <div className="grid gap-10 md:grid-cols-2">
               <div>
-              <div className="aspect-square overflow-hidden rounded-lg border border-border bg-muted">
-                  {isVideoUrl(images[activeImg]) ? (
-                    <video
-                      key={images[activeImg]}
-                      src={images[activeImg]}
-                      controls
-                      className="size-full object-cover"
-                      aria-label={`${product.name} — product video`}
-                    />
-                  ) : (
-                    <ProductImage
-                      src={images[activeImg]}
-                      slug={product.slug}
-                      alt={`${product.name} — SkyGear professional drone`}
-                      className="size-full object-cover"
-                    />
-                  )}
-                </div>
-                {images.length > 1 && (
-                  <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
-                    {images.map((im, i) => (
-                      <button key={i} onClick={() => setActiveImg(i)} className={`relative size-16 shrink-0 overflow-hidden rounded border-2 ${i === activeImg ? "border-primary" : "border-border"}`}>
-                        {isVideoUrl(im) ? (
-                          <>
-                            <video src={im} className="size-full object-cover" muted />
-                            <span className="pointer-events-none absolute left-0.5 top-0.5 rounded bg-black/70 px-1 py-px text-[8px] font-bold uppercase text-white">▶</span>
-                          </>
-                        ) : (
-                          <ProductImage src={im} slug={product.slug} alt="" className="size-full object-cover" />
-                        )}
-                      </button>
-                    ))}
+                <Carousel setApi={setApi} opts={{ loop: false }} className="relative">
+                  <div className="overflow-hidden rounded-lg border border-border bg-muted">
+                    <CarouselContent>
+                      {images.map((im, i) => (
+                        <CarouselItem key={im + i} className="pl-0">
+                          <div className="aspect-square">
+                            {isVideoUrl(im) ? (
+                              <video
+                                key={im}
+                                src={im}
+                                controls
+                                className="size-full object-cover"
+                                aria-label={`${product.name} — product video`}
+                              />
+                            ) : (
+                              <ProductImage
+                                src={im}
+                                slug={product.slug}
+                                alt={`${product.name} — SkyGear professional drone`}
+                                className="size-full object-cover"
+                              />
+                            )}
+                          </div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
                   </div>
-                )}
+
+                  {images.length > 1 && (
+                    <>
+                      <CarouselPrevious className="left-3 top-1/2 border-border bg-background/80 hover:bg-background" />
+                      <CarouselNext className="right-3 top-1/2 border-border bg-background/80 hover:bg-background" />
+                      <div className="mt-3 flex justify-center gap-2">
+                        {images.map((_, i) => (
+                          <button
+                            key={i}
+                            type="button"
+                            aria-label={`Go to media ${i + 1}`}
+                            onClick={() => api?.scrollTo(i)}
+                            className={cn(
+                              "h-2 rounded-full transition-all",
+                              i === active ? "w-8 bg-primary" : "w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50",
+                            )}
+                          />
+                        ))}
+                      </div>
+                      <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+                        {images.map((im, i) => (
+                          <button
+                            key={im + i}
+                            type="button"
+                            onClick={() => api?.scrollTo(i)}
+                            className={cn(
+                              "relative size-16 shrink-0 overflow-hidden rounded border-2",
+                              i === active ? "border-primary" : "border-border",
+                            )}
+                          >
+                            {isVideoUrl(im) ? (
+                              <>
+                                <video src={im} className="size-full object-cover" muted />
+                                <span className="pointer-events-none absolute left-0.5 top-0.5 rounded bg-black/70 px-1 py-px text-[8px] font-bold uppercase text-white">▶</span>
+                              </>
+                            ) : (
+                              <ProductImage src={im} slug={product.slug} alt="" className="size-full object-cover" />
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </Carousel>
               </div>
               <div>
                 {product.category && (
