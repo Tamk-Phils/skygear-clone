@@ -38,10 +38,11 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
+// Use distinct local assets to avoid repeated imagery on mobile cards.
 const CATEGORY_SPOTLIGHTS = [
-  { slug: "drones", badge: "Best trending", title: "Drones", cta: "Shop now", image: IMAGES.categories.drones },
-  { slug: "gimbals", badge: "Top rated", title: "Gimbals & cameras", cta: "View collection", image: IMAGES.categories.gimbals },
-  { slug: "accessories", badge: "Trending", title: "Accessories", cta: "Buy now", image: IMAGES.categories.accessories },
+  { slug: "drones", badge: "Best trending", title: "Drones", cta: "Shop now", image: IMAGES.products["skygear-fpv-racer"] },
+  { slug: "gimbals", badge: "Top rated", title: "Gimbals & cameras", cta: "View collection", image: IMAGES.products["smart-controller"] },
+  { slug: "accessories", badge: "Trending", title: "Accessories", cta: "Buy now", image: IMAGES.products["nd-filter-set"] },
 ] as const;
 
 const INDUSTRIES = [
@@ -49,25 +50,25 @@ const INDUSTRIES = [
     icon: Shield,
     title: "Public safety",
     desc: "Extend your vision and ensure new levels of safety for first responders and search teams.",
-    image: IMAGES.categories.drones,
+    image: IMAGES.hero,
   },
   {
     icon: Building2,
     title: "Construction",
     desc: "Manage your projects with higher precision, progress tracking, and site efficiency.",
-    image: IMAGES.products["skygear-pro-x1"],
+    image: IMAGES.products["skygear-mini-fold"],
   },
   {
     icon: Zap,
     title: "Energy",
     desc: "Advance your operations with increased accuracy for line inspection and asset monitoring.",
-    image: IMAGES.categories.batteries,
+    image: IMAGES.products["intelligent-flight-battery"],
   },
   {
     icon: Sprout,
     title: "Agriculture",
     desc: "Make your farming smart and profitable with crop mapping and precision spraying workflows.",
-    image: IMAGES.categories.accessories,
+    image: IMAGES.products["skygear-cinema-8k"],
   },
 ];
 
@@ -202,11 +203,16 @@ function Home() {
                 alt={c.title}
                 className="absolute inset-0 size-full object-cover transition duration-700 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/40 to-transparent" />
+              {/* No blur/haze overlays — just a light, readable scrim. */}
+              <div className="absolute inset-0 bg-black/35" />
               <div className="relative flex h-full flex-col justify-end p-6 text-white">
-                <p className="text-xs font-bold uppercase tracking-[0.25em] text-primary">{c.badge}</p>
-                <h3 className="mt-2 font-display text-2xl font-extrabold sm:text-3xl">{c.title}</h3>
-                <span className="mt-4 inline-flex w-fit rounded-full border border-white/40 px-5 py-2 text-xs font-bold uppercase tracking-wide transition group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground">
+                <p className="inline-flex w-fit rounded-full bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-primary">
+                  {c.badge}
+                </p>
+                <h3 className="mt-3 font-display text-2xl font-extrabold drop-shadow-[0_2px_10px_rgba(0,0,0,0.35)] sm:text-3xl">
+                  {c.title}
+                </h3>
+                <span className="mt-4 inline-flex w-fit rounded-full bg-white/10 px-5 py-2 text-xs font-bold uppercase tracking-wide transition hover:bg-white/15">
                   {c.cta}
                 </span>
               </div>
