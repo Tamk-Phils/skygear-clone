@@ -55,7 +55,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 const defaultSeo = buildMeta({
   title: "Pro Drones, Gimbals & Accessories",
   description:
-    "Shop professional camera drones, FPV racing quadcopters, cinema UAVs, intelligent flight batteries, gimbals and drone accessories. Free shipping on orders over $300. 2-year warranty.",
+    "Shop professional camera drones, FPV racing quadcopters, cinema UAVs, intelligent flight batteries, gimbals and drone accessories. Fast, insured delivery. 2-year warranty.",
   path: "/",
 });
 

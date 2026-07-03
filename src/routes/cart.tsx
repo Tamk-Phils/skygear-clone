@@ -24,6 +24,7 @@ export const Route = createFileRoute("/cart")({
 function CartPage() {
   const { items, subtotal, updateItem, removeItem } = useCart();
   const { user } = useAuth();
+  const shipping = 25;
 
   return (
     <div className="min-h-screen bg-background">
@@ -79,9 +80,9 @@ function CartPage() {
               <h3 className="font-display text-lg font-bold">Order summary</h3>
               <div className="mt-4 space-y-2 text-sm">
                 <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>${subtotal.toFixed(2)}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Shipping</span><span>{subtotal >= 300 ? "Free" : "$25.00"}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Shipping</span><span>${shipping.toFixed(2)}</span></div>
                 <div className="mt-2 flex justify-between border-t border-border pt-3 text-base font-bold">
-                  <span>Total</span><span className="text-primary">${(subtotal + (subtotal >= 300 ? 0 : 25)).toFixed(2)}</span>
+                  <span>Total</span><span className="text-primary">${(subtotal + shipping).toFixed(2)}</span>
                 </div>
               </div>
               <Link

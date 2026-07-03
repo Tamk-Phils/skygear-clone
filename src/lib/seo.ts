@@ -27,7 +27,6 @@ export const SEO_KEYWORDS = [
   "ND filters for drones",
   "intelligent flight battery",
   "drone warranty",
-  "free shipping drones",
 ].join(", ");
 
 type MetaTag = Record<string, string>;

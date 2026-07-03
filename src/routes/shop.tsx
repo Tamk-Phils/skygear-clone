@@ -15,7 +15,7 @@ const search = z.object({
 const CATEGORY_SEO: Record<string, { title: string; description: string }> = {
   drones: {
     title: "Buy Professional Camera Drones & FPV Quadcopters",
-    description: "Shop SkyGear professional camera drones, foldable travel drones, FPV racing quadcopters and cinema UAVs. 4K, 8K sensors. Free shipping over $300.",
+    description: "Shop SkyGear professional camera drones, foldable travel drones, FPV racing quadcopters and cinema UAVs. 4K, 8K sensors. Fast, insured delivery.",
   },
   batteries: {
     title: "Intelligent Flight Batteries for Drones",

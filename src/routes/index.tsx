@@ -30,7 +30,7 @@ export const Route = createFileRoute("/")({
     const seo = buildMeta({
       title: "Pro Drones, Gimbals & Accessories — Shop SkyGear",
       description:
-        "Buy professional camera drones, FPV racing quadcopters, cinema UAVs, intelligent flight batteries, 3-axis gimbals and drone accessories. Free shipping over $300. Trusted by 60,000+ pilots worldwide.",
+        "Buy professional camera drones, FPV racing quadcopters, cinema UAVs, intelligent flight batteries, 3-axis gimbals and drone accessories. Fast, insured delivery. Trusted by 60,000+ pilots worldwide.",
       path: "/",
     });
     return { meta: seo.meta, links: seo.links };
@@ -168,7 +168,7 @@ function Home() {
       <section className="border-b border-border bg-card">
         <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:grid-cols-2 md:grid-cols-4">
           {[
-            { i: Truck, t: "Free shipping", d: "On drone orders over $300" },
+            { i: Truck, t: "Fast delivery", d: "Insured shipping options" },
             { i: ShieldCheck, t: "2-year warranty", d: "On all SkyGear drones" },
             { i: RefreshCw, t: "30-day returns", d: "Hassle-free policy" },
             { i: Headphones, t: "Expert support", d: "Real pilots on call" },
@@ -344,8 +344,7 @@ function Home() {
             </h2>
             <p className="mt-4 text-sm text-muted-foreground sm:text-base">
               Whether you&apos;re a professional filmmaker, aerial photographer, FPV racer, or hobbyist, we offer
-              the latest SkyGear drones at competitive prices — with free shipping on qualifying orders and
-              expert pilot support on every purchase.
+              the latest SkyGear drones at competitive prices — with expert pilot support on every purchase.
             </p>
             <ul className="mt-6 space-y-3">
               {TRUST_POINTS.map(({ icon: Icon, text }) => (

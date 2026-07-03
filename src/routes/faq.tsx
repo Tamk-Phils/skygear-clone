@@ -9,9 +9,9 @@ const FAQS = [
       "SkyGear offers professional camera drones, foldable travel drones, FPV racing quadcopters, and cinema-grade UAV platforms. We also stock intelligent flight batteries, gimbals, controllers, propellers, ND filters, and hardshell travel cases.",
   },
   {
-    question: "Do you offer free shipping on drone orders?",
+    question: "How much does shipping cost?",
     answer:
-      "Yes. All SkyGear orders over $300 qualify for free standard shipping within the continental United States. Orders under $300 ship for a flat $25. International shipping rates are calculated at checkout.",
+      "Shipping is calculated at checkout based on your destination, item type, and carrier service level. Drone batteries may require compliant ground shipping. For bulk or enterprise orders, contact support for a tailored quote.",
   },
   {
     question: "What is SkyGear's drone warranty policy?",

@@ -36,7 +36,7 @@ function formatExpiry(value: string) {
 function CheckoutPage() {
   const { user } = useAuth();
   const { items, subtotal, clearCart } = useCart();
-  const shipping = subtotal >= 300 ? 0 : 25;
+  const shipping = 25;
   const total = subtotal + shipping;
 
   const [cardName, setCardName] = useState("");
@@ -305,7 +305,7 @@ function CheckoutPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Shipping</span>
-                <span>{shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}</span>
+                <span>${shipping.toFixed(2)}</span>
               </div>
               <div className="flex justify-between border-t border-border pt-3 text-base font-bold">
                 <span>Total</span>

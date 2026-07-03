@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Search, ShoppingBag, User, Facebook, Twitter, Menu, X, LayoutGrid, Phone } from "lucide-react";
+import { Search, ShoppingBag, User, Menu, X, LayoutGrid } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useCart } from "@/lib/cart-context";
 import { useState } from "react";
@@ -30,23 +30,6 @@ export function SiteHeader() {
 
   return (
     <header className="w-full">
-      {/* Top bar */}
-      <div className="bg-navy text-navy-foreground text-[11px] sm:text-xs">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-2">
-          <span className="truncate font-medium tracking-wide">
-            <span className="hidden sm:inline opacity-80 mr-3">SKYGEAR |</span>
-            Bright visuals • Pilot support • 2-year warranty
-          </span>
-          <div className="flex shrink-0 items-center gap-3 opacity-90">
-            <a href="tel:+15035550142" className="hidden items-center gap-1 hover:text-primary sm:flex">
-              <Phone className="size-3.5" />
-              +1 (503) 555-0142
-            </a>
-            <a href="#contact" className="hidden md:inline hover:text-primary">NEWSLETTER</a>
-          </div>
-        </div>
-      </div>
-
       {/* Main bar */}
       <div className="bg-navy text-navy-foreground">
         <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 md:gap-4 md:py-4">

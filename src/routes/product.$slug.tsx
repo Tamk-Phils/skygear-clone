@@ -36,7 +36,7 @@ export const Route = createFileRoute("/product/$slug")({
     const desc = loaderData.short_description ?? loaderData.description?.slice(0, 160) ?? `Buy ${loaderData.name} at SkyGear Drones.`;
     const seo = buildMeta({
       title: `${loaderData.name} — Buy Professional Drone`,
-      description: `${desc} Free shipping on orders over $300. 2-year warranty.`,
+      description: `${desc} Fast, insured delivery. 2-year warranty.`,
       path: `/product/${loaderData.slug}`,
       ogImage: images[0],
       ogType: "product",
@@ -226,7 +226,7 @@ function ProductPage() {
                 </div>
 
                 <ul className="mt-6 space-y-2 text-sm text-muted-foreground">
-                  <li>✓ Free shipping on orders over $300</li>
+                  <li>✓ Fast, insured delivery</li>
                   <li>✓ 2-year manufacturer warranty</li>
                   <li>✓ 30-day hassle-free returns</li>
                   <li>✓ Expert pilot support included</li>

@@ -5,9 +5,9 @@ import { buildMeta } from "@/lib/seo";
 export const Route = createFileRoute("/shipping")({
   head: () => {
     const seo = buildMeta({
-      title: "Shipping Policy — Free Drone Delivery Over $300",
+      title: "Shipping Policy — Fast, Insured Delivery",
       description:
-        "SkyGear shipping policy for professional drones, FPV quadcopters, batteries and accessories. Free shipping on orders over $300. Domestic and international delivery options.",
+        "SkyGear shipping policy for professional drones, FPV quadcopters, batteries and accessories. Fast, insured delivery with domestic and international options.",
       path: "/shipping",
     });
     return { meta: seo.meta, links: seo.links };
@@ -22,11 +22,11 @@ function Shipping() {
       title="Shipping policy"
       subtitle="Fast, insured delivery for drones, batteries, gimbals and accessories — because grounded pilots aren't happy pilots."
     >
-      <ContentSection title="Free shipping threshold">
+      <ContentSection title="Shipping rates">
         <p>
-          All SkyGear orders totaling $300 or more ship free via standard ground delivery within the
-          contiguous United States. Orders under $300 incur a flat $25 shipping fee. Alaska, Hawaii,
-          and U.S. territories ship at calculated rates.
+          Shipping is calculated at checkout based on item type, destination, and carrier service level.
+          Drone batteries ship via compliant ground services where required. For bulk orders or enterprise
+          deployments, contact support for a tailored quote.
         </p>
       </ContentSection>
 
