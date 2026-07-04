@@ -145,7 +145,9 @@ export function SiteHeader() {
       {open && (
         <div className="border-b border-border bg-card md:hidden">
           <nav className="mx-auto flex max-w-7xl flex-col px-4 py-2 text-sm font-semibold uppercase tracking-wide" aria-label="Mobile navigation">
-            <p className="py-2 text-xs text-muted-foreground">Categories</p>
+            <Link to="/shop" onClick={() => setOpen(false)} className="border-b border-border py-3 pl-4 hover:text-primary">
+              All Categories
+            </Link>
             {CATEGORIES.map(c => (
               <Link key={c.slug} to="/shop" search={{ category: c.slug }} onClick={() => setOpen(false)} className="border-b border-border py-3 pl-4 hover:text-primary">
                 {c.label}
