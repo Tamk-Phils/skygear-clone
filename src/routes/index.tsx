@@ -40,7 +40,7 @@ export const Route = createFileRoute("/")({
 
 // Use distinct local assets to avoid repeated imagery on mobile cards.
 const CATEGORY_SPOTLIGHTS = [
-  { slug: "drones", badge: "Best trending", title: "Drones", cta: "Shop now", image: IMAGES.products["skygear-fpv-racer"] },
+  { slug: "drones", badge: "Best trending", title: "Drones", cta: "Shop now", video: "/drone1.mp4" },
   { slug: "gimbals", badge: "Top rated", title: "Gimbals & cameras", cta: "View collection", image: IMAGES.products["smart-controller"] },
   { slug: "accessories", badge: "Trending", title: "Accessories", cta: "Buy now", image: IMAGES.products["nd-filter-set"] },
 ] as const;
@@ -198,13 +198,25 @@ function Home() {
               search={{ category: c.slug }}
               className="group relative min-h-[220px] overflow-hidden rounded-xl sm:min-h-[280px]"
             >
-              <img
-                src={c.image}
-                alt={c.title}
-                className="absolute inset-0 size-full object-cover transition duration-700 group-hover:scale-105"
-              />
-              {/* No blur/haze overlays — just a light, readable scrim. */}
-              <div className="absolute inset-0 bg-black/35" />
+              {"video" in c ? (
+                <video
+                  src={c.video}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  className="absolute inset-0 size-full object-cover"
+                />
+              ) : (
+                <img
+                  src={c.image}
+                  alt={c.title}
+                  className="absolute inset-0 size-full object-cover transition duration-700 group-hover:scale-105"
+                />
+              )}
+              {/* Bottom scrim for legibility — keeps media bright */}
+              <div className="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black/65 via-black/25 to-transparent" />
               <div className="relative flex h-full flex-col justify-end p-6 text-white">
                 <p className="inline-flex w-fit rounded-full bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-primary">
                   {c.badge}
