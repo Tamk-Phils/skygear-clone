@@ -37,15 +37,17 @@ function categoryImage(slug: string): string | undefined {
   return IMAGES.categories[slug as keyof typeof IMAGES.categories];
 }
 
-/** Always prefer slug-based local images over DB URLs (which may be broken external links). */
 export function resolveImageUrl(url: string | null | undefined, slug?: string): string {
+  if (url?.startsWith("http")) return url;
+  if (url?.startsWith("/images/")) return url;
+
   if (slug) {
     const product = productImage(slug);
     if (product) return product;
     const category = categoryImage(slug);
     if (category) return category;
   }
-  if (url?.startsWith("/images/")) return url;
+
   if (url?.startsWith("/__l5e/") || url?.includes("__l5e")) {
     if (slug) return productImage(slug) ?? categoryImage(slug) ?? IMAGES.hero;
     for (const [cat, img] of Object.entries(LEGACY_CATEGORY_MAP)) {
@@ -53,7 +55,7 @@ export function resolveImageUrl(url: string | null | undefined, slug?: string): 
     }
     return IMAGES.hero;
   }
-  if (url?.startsWith("http")) return url;
+
   return IMAGES.placeholder;
 }
 
@@ -64,7 +66,7 @@ export function isVideoUrl(url: string): boolean {
 
 export function resolveProductImages(images: string[] | null | undefined, slug: string): string[] {
   // Prefer uploaded (Supabase / http) images — they're the admin's intent.
-  const uploaded = images?.filter((img) => img.startsWith("http"));
+  const uploaded = images?.filter((img) => img.startsWith("http") || img.startsWith("/images/"));
   if (uploaded?.length) return uploaded;
 
   // Fall back to local slug-keyed images bundled with the app.

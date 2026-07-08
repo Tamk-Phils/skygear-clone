@@ -5,12 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ProductImage } from "@/components/product-image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -127,7 +122,10 @@ function AdminMediaUpload({
       const ext = file.name.split(".").pop();
       const name = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
       const { error } = await supabase.storage.from(bucket).upload(name, file);
-      if (error) { toast.error(`${file.name}: ${error.message}`); continue; }
+      if (error) {
+        toast.error(`${file.name}: ${error.message}`);
+        continue;
+      }
       const { data } = supabase.storage.from(bucket).getPublicUrl(name);
       uploaded.push(data.publicUrl);
     }
@@ -158,10 +156,10 @@ function AdminMediaUpload({
   return (
     <div className="flex flex-col gap-3">
       {values.length > 0 && (
-        <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+        <div className="grid max-h-72 grid-cols-[repeat(auto-fill,minmax(5.5rem,1fr))] gap-2 overflow-y-auto pr-1">
           {values.map((url, i) => (
             <div
-              key={i}
+              key={`${url}-${i}`}
               className="group relative aspect-square overflow-hidden rounded-lg border border-border bg-muted"
             >
               {isVideoUrl(url) ? (
@@ -237,7 +235,12 @@ function AdminMediaUpload({
           type="url"
           value={urlInput}
           onChange={(e) => setUrlInput(e.target.value)}
-          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addUrl(); } }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              addUrl();
+            }
+          }}
           placeholder="Or paste URL…"
           className={`${adminInput} flex-1`}
           disabled={disabled}
@@ -267,8 +270,7 @@ export function OverviewPanel() {
   });
   const { data: orders } = useQuery({
     queryKey: ["admin-orders"],
-    queryFn: async () =>
-      (await supabase.from("orders").select("id, status, total")).data ?? [],
+    queryFn: async () => (await supabase.from("orders").select("id, status, total")).data ?? [],
   });
   const { data: users } = useQuery({
     queryKey: ["admin-users"],
@@ -438,7 +440,8 @@ export function ProductsPanel() {
   };
 
   const toggle = async (id: string, field: "is_published" | "is_featured", value: boolean) => {
-    const { error } = await supabase.from("products").update({ [field]: value } as any).eq("id", id);
+    const payload = field === "is_published" ? { is_published: value } : { is_featured: value };
+    const { error } = await supabase.from("products").update(payload).eq("id", id);
     if (error) return toast.error(error.message);
     qc.invalidateQueries({ queryKey: ["admin-products"] });
   };
@@ -508,7 +511,9 @@ export function ProductsPanel() {
                       <div className="truncate text-xs text-muted-foreground">
                         {p.category?.name ?? "Uncategorized"} · /{p.slug}
                       </div>
-                      <div className="mt-1 text-sm font-medium sm:hidden">${Number(p.price).toFixed(2)}</div>
+                      <div className="mt-1 text-sm font-medium sm:hidden">
+                        ${Number(p.price).toFixed(2)}
+                      </div>
                       <div className="mt-1 flex flex-wrap gap-1 md:hidden">
                         <button onClick={() => toggle(p.id, "is_published", !p.is_published)}>
                           <Badge variant={p.is_published ? "default" : "secondary"}>
@@ -520,7 +525,9 @@ export function ProductsPanel() {
                     </div>
                   </div>
                 </TableCell>
-                <TableCell className="hidden sm:table-cell">${Number(p.price).toFixed(2)}</TableCell>
+                <TableCell className="hidden sm:table-cell">
+                  ${Number(p.price).toFixed(2)}
+                </TableCell>
                 <TableCell>
                   <span className={p.stock <= 5 ? "font-semibold text-amber-600" : ""}>
                     {p.stock}
@@ -560,7 +567,7 @@ export function ProductsPanel() {
       </AdminTableWrap>
 
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
-        <DialogContent className="max-h-[90vh] w-[calc(100%-2rem)] max-w-lg overflow-y-auto">
+        <DialogContent className="max-h-[90vh] w-[calc(100%-2rem)] max-w-2xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editing ? "Edit product" : "Add product"}</DialogTitle>
           </DialogHeader>
@@ -778,7 +785,9 @@ export function CategoriesPanel() {
                     </div>
                   </div>
                 </TableCell>
-                <TableCell className="hidden text-muted-foreground sm:table-cell">/{c.slug}</TableCell>
+                <TableCell className="hidden text-muted-foreground sm:table-cell">
+                  /{c.slug}
+                </TableCell>
                 <TableCell className="hidden md:table-cell">{c.sort_order}</TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-1">
@@ -943,7 +952,9 @@ export function OrdersPanel() {
                       {o.customer_email ?? "—"}
                     </div>
                   </TableCell>
-                  <TableCell className="hidden text-sm sm:table-cell">{o.customer_email ?? "—"}</TableCell>
+                  <TableCell className="hidden text-sm sm:table-cell">
+                    {o.customer_email ?? "—"}
+                  </TableCell>
                   <TableCell>${Number(o.total).toFixed(2)}</TableCell>
                   <TableCell>
                     <Badge variant={o.status === "pending" ? "secondary" : "default"}>
@@ -1073,10 +1084,7 @@ export function UsersPanel() {
 
   return (
     <div>
-      <AdminSectionHeader
-        title="Users"
-        description="Manage customer accounts and admin access."
-      />
+      <AdminSectionHeader title="Users" description="Manage customer accounts and admin access." />
 
       <AdminTableWrap>
         <Table>
@@ -1106,7 +1114,9 @@ export function UsersPanel() {
                         <div className="truncate font-medium">
                           {u.display_name ?? u.user_id.slice(0, 8) + "…"}
                         </div>
-                        <div className="truncate text-xs text-muted-foreground md:hidden">{u.email}</div>
+                        <div className="truncate text-xs text-muted-foreground md:hidden">
+                          {u.email}
+                        </div>
                       </div>
                     </TableCell>
                     <TableCell className="hidden text-sm md:table-cell">{u.email}</TableCell>
@@ -1129,7 +1139,9 @@ export function UsersPanel() {
                         className="text-xs sm:text-sm"
                         onClick={() => toggleAdmin(u.user_id, !!isAdmin)}
                       >
-                        <span className="hidden sm:inline">{isAdmin ? "Revoke admin" : "Make admin"}</span>
+                        <span className="hidden sm:inline">
+                          {isAdmin ? "Revoke admin" : "Make admin"}
+                        </span>
                         <span className="sm:hidden">{isAdmin ? "Revoke" : "Admin"}</span>
                       </Button>
                     </TableCell>

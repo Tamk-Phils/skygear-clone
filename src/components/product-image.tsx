@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { resolveImageUrl, IMAGES } from "@/lib/images";
 
 type ProductImageProps = {
@@ -12,6 +12,10 @@ type ProductImageProps = {
 export function ProductImage({ src, slug, alt, className, loading }: ProductImageProps) {
   const resolved = resolveImageUrl(src ?? undefined, slug);
   const [current, setCurrent] = useState(resolved);
+
+  useEffect(() => {
+    setCurrent(resolved);
+  }, [resolved]);
 
   return (
     <img
