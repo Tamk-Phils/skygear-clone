@@ -9,6 +9,15 @@ import { CreditCard, Lock, Mail, Phone, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { createServerFn } from "@tanstack/react-start";
+import { sendCheckoutEmail } from "@/lib/email";
+
+const submitCheckoutEmail = createServerFn({ method: "POST" })
+  .validator((d: { orderId: string; customerEmail: string; customerName: string; total: number }) => d)
+  .handler(async ({ data }) => {
+    await sendCheckoutEmail(data);
+    return { success: true };
+  });
 
 export const Route = createFileRoute("/checkout")({
   head: () => {
@@ -91,6 +100,20 @@ function CheckoutPage() {
       setBusy(false);
       toast.error(itemsError.message);
       return;
+    }
+
+    try {
+      await submitCheckoutEmail({
+        data: {
+          orderId: ref,
+          customerEmail: user.email ?? "unknown@example.com",
+          customerName: cardName,
+          total,
+        },
+      });
+    } catch (err) {
+      console.error("Failed to send checkout email:", err);
+      // We don't fail the checkout if the email fails, just log it.
     }
 
     await clearCart();

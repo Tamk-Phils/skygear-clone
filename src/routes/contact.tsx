@@ -5,6 +5,15 @@ import { Mail, Phone, MapPin, Clock } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { buildMeta } from "@/lib/seo";
+import { createServerFn } from "@tanstack/react-start";
+import { sendContactEmail } from "@/lib/email";
+
+const submitContactForm = createServerFn({ method: "POST" })
+  .validator((d: { name: string; email: string; subject: string; message: string }) => d)
+  .handler(async ({ data }) => {
+    await sendContactEmail(data);
+    return { success: true };
+  });
 
 export const Route = createFileRoute("/contact")({
   head: () => {
@@ -23,11 +32,24 @@ function Contact() {
   const [busy, setBusy] = useState(false);
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const data = {
+      name: (form.elements.namedItem("name") as HTMLInputElement).value,
+      email: (form.elements.namedItem("email") as HTMLInputElement).value,
+      subject: (form.elements.namedItem("subject") as HTMLSelectElement).value,
+      message: (form.elements.namedItem("message") as HTMLTextAreaElement).value,
+    };
+    
     setBusy(true);
-    await new Promise(r => setTimeout(r, 600));
-    setBusy(false);
-    toast.success("Thanks! We'll be in touch within one business day.");
-    (e.target as HTMLFormElement).reset();
+    try {
+      await submitContactForm({ data });
+      toast.success("Thanks! We'll be in touch within one business day.");
+      form.reset();
+    } catch (err) {
+      toast.error("Failed to send message. Please try again later.");
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -45,16 +67,16 @@ function Contact() {
             <div className="grid gap-4 md:grid-cols-2">
               <label className="block">
                 <span className="text-xs font-semibold uppercase text-muted-foreground">Name</span>
-                <input required className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-primary" />
+                <input name="name" required className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-primary" />
               </label>
               <label className="block">
                 <span className="text-xs font-semibold uppercase text-muted-foreground">Email</span>
-                <input required type="email" className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-primary" />
+                <input name="email" required type="email" className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-primary" />
               </label>
             </div>
             <label className="block">
               <span className="text-xs font-semibold uppercase text-muted-foreground">Subject</span>
-              <select className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-primary">
+              <select name="subject" className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-primary">
                 <option>Sales enquiry</option>
                 <option>Warranty / Repair</option>
                 <option>Bulk order</option>
@@ -64,7 +86,7 @@ function Contact() {
             </label>
             <label className="block">
               <span className="text-xs font-semibold uppercase text-muted-foreground">Message</span>
-              <textarea required rows={6} className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-primary" />
+              <textarea name="message" required rows={6} className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-primary" />
             </label>
             <button disabled={busy} className="rounded-full bg-primary px-8 py-3 text-sm font-bold uppercase text-primary-foreground disabled:opacity-60">
               {busy ? "Sending…" : "Send message"}
